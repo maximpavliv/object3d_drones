@@ -27,7 +27,7 @@ Ry=[cos(p), 0, sin(p); 0, 1, 0; -sin(p), 0, cos(p)];
 Rx=[1, 0, 0; 0, cos(r), -sin(r); 0, sin(r), cos(r)];
 
 R_offset = Rz*Ry*Rx;
-Rcw = [0, -1, 0; 0, 0, -1; 1, 0, 0];
+R_cam_w
 
 % visualization flag
 vis = 1;
