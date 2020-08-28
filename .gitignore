@@ -1,0 +1,7 @@
+data/*
+pose-hg/pose-hg-demo/data/*
+pose-hg/pose-hg-demo/exp/*
+pose-hg/pose-hg-train/data/*
+pose-hg/pose-hg-train/exp/*
+result_poses/*
+*.t7
