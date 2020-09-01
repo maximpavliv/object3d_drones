@@ -19,15 +19,19 @@ load(annotfile);
 cad = load('drones_files/cad.mat');
 dict = load('drones_files/dict.mat');
 
+
 yaw=0; pitch=-0.3; roll=-0.01;
+T_offset = [0; 0; 0]
 
 
-Rz=[cos(y), sin(y), 0; -sin(y), cos(y), 0; 0, 0, 1];
-Ry=[cos(p), 0, sin(p); 0, 1, 0; -sin(p), 0, cos(p)];
-Rx=[1, 0, 0; 0, cos(r), -sin(r); 0, sin(r), cos(r)];
-
+Rz=[cos(yaw), sin(yaw), 0; -sin(yaw), cos(yaw), 0; 0, 0, 1];
+Ry=[cos(pitch), 0, sin(pitch); 0, 1, 0; -sin(pitch), 0, cos(pitch)];
+Rx=[1, 0, 0; 0, cos(roll), -sin(roll); 0, sin(roll), cos(roll)];
 R_offset = Rz*Ry*Rx;
-Rcw = [0, -1, 0; 0, 0, -1; 1, 0, 0];
+R_inv = [0, -1, 0; 0, 0, -1; 1, 0, 0];
+%R_inv = [0, 0, 1; 0, -1, 0; 1, 0, 0];
+
+R_cg = R_inv*R_offset;
 
 % visualization flag
 vis = 1;
@@ -42,8 +46,10 @@ for ID = 1:size(annot.imgname)
     
     
     
-    gt.rotation = squeeze(annot.rotation(ID,:,:));
-    gt.translation = reshape(annot.translation(ID,:),3,1);
+    gt.rotation_gd = squeeze(annot.rotation(ID,:,:));
+    gt.rotation = R_cg*gt.rotation_gd;
+    gt.translation_gd = reshape(annot.translation(ID,:),3,1);
+    gt.translation = R_cg*gt.translation_gd;
     
 
 
@@ -71,17 +77,34 @@ for ID = 1:size(annot.imgname)
     output_fp.T_metric = T_fp/w;   
     %copied from demoFP
 
-    display('gt:')
-    gt.translation
+    display('GT:')
+    %gt.translation
+    display('rot gd:')
+    gt.rotation_gd
+%    display('euler gt:')
+%    rotm2eul(gt.rotation_gd)*180/pi
+    display('rot rotated gt:')
     gt.rotation
-    display('estimated:')
+%    display('euler rotated gt:')
+%    rotm2eul(gt.rotation)*180/pi
+    display('ESTIMATED:')
     output_fp.T_metric
+    display('rot estimated')
     output_fp.R
-
+%    display('euler estimated')
+%    rotm2eul(output_fp.R)*180/pi
+    %display('rotated:')
+    %diag([1,-1,-1])*output_fp.R
+    %error: 
+    %err_R = 180/pi*norm(logm(gt.rotation'*output_fp.R),'fro')/sqrt(2);
+    %display('error in deg')
+    %err_R
+    
     % visualization
     if vis
         img = imread(sprintf('%s/../images/%s.jpg',datapath,imgname));
-        vis_fp(img,output_fp,output_wp,heatmap,center,scale,K,cad);
+        %imshow(img);
+        vis_fp_gt(img,output_fp,output_wp,heatmap,center,scale,K,cad,gt);
         pause
         close all
     end

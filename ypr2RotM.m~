@@ -1,1 +1,0 @@
-function output = PoseFromKpts_WP(W,dict,varargin)

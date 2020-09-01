@@ -22,7 +22,7 @@ load(annotfile);
 cadSpecific = 1;
 
 % visualization flag
-vis = 0;
+vis = 1;
 
 % evaluate only on the clean set
 testlist = find(~annot.occluded & ~annot.truncated);
@@ -57,10 +57,12 @@ for ID = testlist'
     % pose optimization - weak perspective
     output_wp = PoseFromKpts_WP(W_hp,dict,'weight',score,'verb',false,'lam',1);
 
+    rot_gt = squeeze(annot.rot(ID,:,:));
+    
     % visualization
     if vis
         img = imread(sprintf('%s/../images/%s.jpg',datapath,imgname));
-        vis_wp(img,output_wp,heatmap,center,scale,cad,dict);
+        vis_wp_gt(img,output_wp,heatmap,center,scale,cad,dict,rot_gt);
         pause
         close all
     end
