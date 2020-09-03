@@ -29,7 +29,6 @@ testlist = find(~annot.occluded & ~annot.truncated);
 
 for ID = testlist'
 
-    ID
     % input
     imgname = annot.imgname{ID};
     center = annot.center(ID,:);
@@ -58,8 +57,10 @@ for ID = testlist'
     % pose optimization - weak perspective
     output_wp = PoseFromKpts_WP(W_hp,dict,'weight',score,'verb',false,'lam',1);
 
-    rotM_gt = annot.rot(ID,:,:);
-    rot_gt = diag([1,-1,-1])*rotM_gt{1};
+    rotM_ = annot.rot(ID,:,:);
+    rotM_
+    squeeze(annot.rot(ID,:,:))
+    rot_gt = squeeze(annot.rot(ID,:,:));
     
     % visualization
     if vis

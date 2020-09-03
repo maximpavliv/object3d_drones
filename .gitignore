@@ -5,3 +5,4 @@ pose-hg/pose-hg-train/data/*
 pose-hg/pose-hg-train/exp/*
 result_poses/*
 *.t7
+result/*
