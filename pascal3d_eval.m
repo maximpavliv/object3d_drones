@@ -59,7 +59,8 @@ for ID = testlist'
     output_wp = PoseFromKpts_WP(W_hp,dict,'weight',score,'verb',false,'lam',1);
 
     rotM_gt = annot.rot(ID,:,:);
-    rot_gt = diag([1,-1,-1])*rotM_gt{1};
+%    rot_gt = diag([1,-1,-1])*rotM_gt{1};
+    rot_gt = rotM_gt{1};
     
     % visualization
     if vis

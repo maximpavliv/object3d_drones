@@ -22,6 +22,10 @@ function pascal3d_res(datapath,savepath)
         classID = annot.classID{i};R_gt = annot.rot{i};
 
         R = (diag([1,-1,-1])*output_wp.R)';
+        disp('gt rot M:')
+        R_gt
+        disp('est rit M:')
+        R
         err_R = 180/pi*norm(logm(R_gt'*R),'fro')/sqrt(2);
         if isnan(err_R)
             err_R = 90;

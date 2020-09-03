@@ -44,7 +44,7 @@ function vis_fp_gt(img, opt_fp, opt_wp, heatmap, center, scale, K, cad, gt)
     imshow(img_crop); hold on;
     patch('vertices',mesh2d_wp','faces',model_wp.faces,'FaceColor','blue','FaceAlpha',0.3,'EdgeColor','none');
     % gt wp
-    patch('vertices',mesh2d_wp_gt','faces',model_wp_gt.faces,'FaceColor','red','FaceAlpha',0.3,'EdgeColor','none');
+    %patch('vertices',mesh2d_wp_gt','faces',model_wp_gt.faces,'FaceColor','red','FaceAlpha',0.3,'EdgeColor','none');
     % project cad model on image (full perspective), estimation
     subplot('position',[3/nplot 0 1/nplot 1]);
     imshow(img_crop); hold on;
