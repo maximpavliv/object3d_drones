@@ -1,6 +1,7 @@
 function pascal3d_res(datapath,savepath)
 
-    annotfile = sprintf('%s/valid.mat',datapath);
+    %annotfile = sprintf('%s/valid.mat',datapath);
+    annotfile = sprintf('%s/valid_light.mat',datapath);
     load(annotfile);
 
     testlist = find(~annot.occluded & ~annot.truncated);
@@ -19,17 +20,20 @@ function pascal3d_res(datapath,savepath)
         savefile = sprintf('%s/valid_%d.mat',savepath,i);
         load(savefile);
 
-        classID = annot.classID{i};R_gt = annot.rot{i};
+        classID = annot.classID{i};
+        
+        R_gt = annot.rot{i};
 
         R = (diag([1,-1,-1])*output_wp.R)';
-        disp('gt rot M:')
-        R_gt
-        disp('est rit M:')
-        R
+%        disp('gt rot M:')
+%        R_gt
+%        disp('est rit M:')
+%        R
         err_R = 180/pi*norm(logm(R_gt'*R),'fro')/sqrt(2);
         if isnan(err_R)
             err_R = 90;
         end
+        err_R
         ERR1{classID} = [ERR1{classID},err_R];
     end
 

@@ -13,7 +13,8 @@ predpath = 'pose-hg/pose-hg-demo/exp/pascal3d/';
 % path where the results are stored
 savepath = 'result/cad/';
 mkdir(savepath);
-annotfile = sprintf('%s/valid.mat',datapath);
+%annotfile = sprintf('%s/valid.mat',datapath);
+annotfile = sprintf('%s/valid_light.mat',datapath);
 load(annotfile);
 
 % determines shape model used for pose optimization
@@ -58,14 +59,20 @@ for ID = testlist'
     % pose optimization - weak perspective
     output_wp = PoseFromKpts_WP(W_hp,dict,'weight',score,'verb',false,'lam',1);
 
-    rotM_gt = annot.rot(ID,:,:);
-%    rot_gt = diag([1,-1,-1])*rotM_gt{1};
-    rot_gt = rotM_gt{1};
-    
+    R_gt = annot.rot{ID};
+    R = (diag([1,-1,-1])*output_wp.R)';
+    err_R = 180/pi*norm(logm(R_gt'*R),'fro')/sqrt(2);
+    if isnan(err_R)
+        err_R = 90;
+    end
+    err_R
+
+    R_gt_aligned = diag([1,-1,-1])*R_gt';
+
     % visualization
     if vis
         img = imread(sprintf('%s/../images/%s.jpg',datapath,imgname));
-        vis_wp_gt(img,output_wp,heatmap,center,scale,cad,dict,rot_gt);
+        vis_wp_gt(img,output_wp,heatmap,center,scale,cad,dict,R_gt_aligned);
         pause
         close all
     end
@@ -75,4 +82,4 @@ for ID = testlist'
 end
 
 % results
-pascal3d_res(datapath, savepath);
+%pascal3d_res(datapath, savepath);
