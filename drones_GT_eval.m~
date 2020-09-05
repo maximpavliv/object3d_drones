@@ -27,8 +27,8 @@ T_offset = [0; 0; 0];
 Rz=[cos(yaw), sin(yaw), 0; -sin(yaw), cos(yaw), 0; 0, 0, 1];
 Ry=[cos(pitch), 0, sin(pitch); 0, 1, 0; -sin(pitch), 0, cos(pitch)];
 Rx=[1, 0, 0; 0, cos(roll), -sin(roll); 0, sin(roll), cos(roll)];
-R_offset = (Rz*Ry*Rx);
-R_inv = [0, -1, 0; 0, 0, -1; 1, 0, 0];
+R_offset = (Rz*Ry*Rx)';
+R_inv = [0, -1, 0; 0, 0, -1; 1, 0, 0]';
 %R_inv = [0, 0, 1; 0, -1, 0; 1, 0, 0];
 
 R_cg = R_inv*R_offset;
@@ -47,10 +47,12 @@ for ID = 1:size(annot.imgname)
     
     
     gt.rotation_gd = squeeze(annot.rotation(ID,:,:));
-    %gt.rotation_gd
-%    gt.rotation_shifted = R_offset*gt.rotation_gd;
-    gt.rotation_cd = R_cg*gt.rotation_gd';
-
+    rotation_gd
+%    cam_rotation = R_cg*rotation_gd;
+    cam_rotation = R_cg*rotation_gd;
+%    gt.rotation = diag([1,-1,-1])*cam_rotation;
+    gt.rotation = cam_rotation;
+    %gt.rotation = rotation_gd;
     gt.translation = reshape(annot.translation(ID,:),3,1);
     %gt.translation = R_cg*gt.translation_gd;
     
@@ -94,9 +96,8 @@ for ID = 1:size(annot.imgname)
     %diag([1,-1,-1])*output_fp.R
     %error: 
     
-    R_gt = gt.rotation_cd;
-%    R = (diag([1,-1,-1])*output_fp.R)';
-    R = output_fp.R;
+    R_gt = gt.rotation;
+    R = (diag([1,-1,-1])*output_fp.R)';
     err_R = 180/pi*norm(logm(R_gt'*R),'fro')/sqrt(2);
     if isnan(err_R)
         err_R = 90;
