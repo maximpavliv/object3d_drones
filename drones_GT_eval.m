@@ -11,7 +11,7 @@ datapath = 'pose-hg/pose-hg-demo/data/drones_GT/annot/';
 % path for network output
 predpath = 'pose-hg/pose-hg-demo/exp/drones_GT/';
 % path where the results are stored
-savepath = 'result_poses/drones_GT/';
+savepath = 'result_drones_GT/';
 mkdir(savepath);
 annotfile = sprintf('%s/valid.mat',datapath);
 load(annotfile);
@@ -34,7 +34,7 @@ R_inv = [0, -1, 0; 0, 0, -1; 1, 0, 0];
 R_cg = R_inv*R_offset;
 
 % visualization flag
-vis = 1;
+vis = 0;
 
 for ID = 1:size(annot.imgname)
 
@@ -44,17 +44,10 @@ for ID = 1:size(annot.imgname)
     scale = annot.scale(ID);    
     K = annot.K{ID};
     
-    
-    
     gt.rotation_gd = squeeze(annot.rotation(ID,:,:));
-    %gt.rotation_gd
-%    gt.rotation_shifted = R_offset*gt.rotation_gd;
     gt.rotation_cd = R_cg*gt.rotation_gd';
-
-    gt.translation = reshape(annot.translation(ID,:),3,1);
-    %gt.translation = R_cg*gt.translation_gd;
-    
-
+    gt.translation_gd = reshape(annot.translation(ID,:),3,1);
+    gt.translation_cd = R_cg*gt.translation_gd;
 
     savefile = sprintf('%s/valid_%d.mat',savepath,ID);
 
@@ -102,6 +95,17 @@ for ID = 1:size(annot.imgname)
         err_R = 90;
     end
     err_R
+    display('translation error raw:')
+    err_T = gt.translation_cd - output_fp.T_metric;
+    err_T_norm = norm(err_T);
+    err_T_norm
+    r = gt.translation_cd(3)/output_fp.T_metric(3);
+    estimated_planar_rescaled = [output_fp.T_metric(1)*r; output_fp.T_metric(2)*r];
+    err_planar_scaled = estimated_planar_rescaled-gt.translation_cd(1:2);
+    display('planar error when on same plane:')
+    err_planar_scaled_norm = norm(err_planar_scaled);
+    err_planar_scaled_norm
+    
     
     % visualization
     if vis
@@ -113,7 +117,7 @@ for ID = 1:size(annot.imgname)
     end
 
     % save output
-    save(savefile,'output_fp');
+    save(savefile,'output_fp','err_R','err_T','err_planar_scaled');
         
 end
 

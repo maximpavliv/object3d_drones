@@ -11,7 +11,7 @@ datapath = 'pose-hg/pose-hg-demo/data/drones_GT/annot/';
 % path for network output
 predpath = 'pose-hg/pose-hg-demo/exp/drones_GT/';
 % path where the results are stored
-savepath = 'result_poses/drones_GT/';
+savepath = 'result_drones_GT/';
 mkdir(savepath);
 annotfile = sprintf('%s/valid.mat',datapath);
 load(annotfile);
@@ -27,14 +27,14 @@ T_offset = [0; 0; 0];
 Rz=[cos(yaw), sin(yaw), 0; -sin(yaw), cos(yaw), 0; 0, 0, 1];
 Ry=[cos(pitch), 0, sin(pitch); 0, 1, 0; -sin(pitch), 0, cos(pitch)];
 Rx=[1, 0, 0; 0, cos(roll), -sin(roll); 0, sin(roll), cos(roll)];
-R_offset = (Rz*Ry*Rx)';
-R_inv = [0, -1, 0; 0, 0, -1; 1, 0, 0]';
+R_offset = (Rz*Ry*Rx);
+R_inv = [0, -1, 0; 0, 0, -1; 1, 0, 0];
 %R_inv = [0, 0, 1; 0, -1, 0; 1, 0, 0];
 
 R_cg = R_inv*R_offset;
 
 % visualization flag
-vis = 1;
+vis = 0;
 
 for ID = 1:size(annot.imgname)
 
@@ -44,19 +44,10 @@ for ID = 1:size(annot.imgname)
     scale = annot.scale(ID);    
     K = annot.K{ID};
     
-    
-    
     gt.rotation_gd = squeeze(annot.rotation(ID,:,:));
-    rotation_gd
-%    cam_rotation = R_cg*rotation_gd;
-    cam_rotation = R_cg*rotation_gd;
-%    gt.rotation = diag([1,-1,-1])*cam_rotation;
-    gt.rotation = cam_rotation;
-    %gt.rotation = rotation_gd;
-    gt.translation = reshape(annot.translation(ID,:),3,1);
-    %gt.translation = R_cg*gt.translation_gd;
-    
-
+    gt.rotation_cd = R_cg*gt.rotation_gd';
+    gt.translation_gd = reshape(annot.translation(ID,:),3,1);
+    gt.translation_cd = R_cg*gt.translation_gd;
 
     savefile = sprintf('%s/valid_%d.mat',savepath,ID);
 
@@ -96,13 +87,25 @@ for ID = 1:size(annot.imgname)
     %diag([1,-1,-1])*output_fp.R
     %error: 
     
-    R_gt = gt.rotation;
-    R = (diag([1,-1,-1])*output_fp.R)';
+    R_gt = gt.rotation_cd;
+%    R = (diag([1,-1,-1])*output_fp.R)';
+    R = output_fp.R;
     err_R = 180/pi*norm(logm(R_gt'*R),'fro')/sqrt(2);
     if isnan(err_R)
         err_R = 90;
     end
     err_R
+    display('translation error raw:')
+    err_T = gt.translation_cd - output_fp.T_metric;
+    err_T_norm = norm(err_T);
+    err_T_norm
+    r = gt.translation_cd(3)/output_fp.T_metric(3);
+    estimated_planar_rescaled = [output_fp.T_metric(1)*r; output_fp.T_metric(2)*r];
+    err_planar_scaled = estimated_planar_rescaled-gt.translation_cd(1:2);
+    display('planar error when on same plane:')
+    err_planar_scaled_norm = norm(err_planar_scaled);
+    planar_scaled_err_norm
+    
     
     % visualization
     if vis
@@ -114,7 +117,7 @@ for ID = 1:size(annot.imgname)
     end
 
     % save output
-    save(savefile,'output_fp');
+    save(savefile,'output_fp','err_R','err_T','err_planar_scaled');
         
 end
 
