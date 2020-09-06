@@ -51,14 +51,14 @@ function vis_fp_gt(img, opt_fp, opt_wp, heatmap, center, scale, K, cad, gt)
     patch('vertices',mesh2d_fp','faces',model_fp.faces,'FaceColor','blue','FaceAlpha',0.3,'EdgeColor','none');
 
     % gt wp
-%    subplot('position',[4/nplot 0 1/nplot 1]);
-%    imshow(img_crop); hold on;
-%    patch('vertices',mesh2d_wp_gt','faces',model_wp_gt.faces,'FaceColor','red','FaceAlpha',0.3,'EdgeColor','none');    
     subplot('position',[4/nplot 0 1/nplot 1]);
-    h2_cd = subplot('position',[4/nplot 0 1/nplot 1]);
-    trisurf(model_gt_fp.faces,model_gt_fp.vertices(:,1),model_gt_fp.vertices(:,2),model_gt_fp.vertices(:,3),'EdgeColor','none');axis equal;
-    view(0,-90);
-    set(h2_cd,'XTick',[],'YTick',[]);
-    set(h2_cd,'visible','off')
+    imshow(img_crop); hold on;
+    patch('vertices',mesh2d_gt_fp','faces',model_gt_fp.faces,'FaceColor','red','FaceAlpha',0.3,'EdgeColor','none');    
+    %subplot('position',[4/nplot 0 1/nplot 1]);
+    %h2_cd = subplot('position',[4/nplot 0 1/nplot 1]);
+    %trisurf(model_gt_fp.faces,model_gt_fp.vertices(:,1),model_gt_fp.vertices(:,2),model_gt_fp.vertices(:,3),'EdgeColor','none');axis equal;
+    %view(0,-90);
+    %set(h2_cd,'XTick',[],'YTick',[]);
+    %set(h2_cd,'visible','off')
 
 end
