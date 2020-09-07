@@ -32,10 +32,10 @@ for ID = 1:length(annot.imgname)
     % TODO: WHAT IS THE DIFFERENCE BETWEEN W_HP, W_IM, W_HO??
     
     % pose optimization - weak perspective
-     output_wp = PoseFromKpts_WP_convergence_plots(W_hp,dict,'weight',score,'verb',false);
+     output_wp = PoseFromKpts_WP(W_hp,dict,'weight',score,'verb',false);
     
     % pose optimization - full perspective
-    output_fp = PoseFromKpts_FP_convergence_plots(W_ho,dict,'R0',output_wp.R,'weight',score,'verb',false);
+    output_fp = PoseFromKpts_FP(W_ho,dict,'R0',output_wp.R,'weight',score,'verb',false);
     
     % update translation given object metric size
     S_fp = bsxfun(@plus,output_fp.R*output_fp.S,output_fp.T);
