@@ -9,12 +9,13 @@ startup
 %datapath = 'demo/gascan/';
 datapath = 'demo/drones-sample';
 annotfile = sprintf('%s/annot/valid.mat',datapath);
+%annotfile = sprintf('%s/annot/valid_K_modified.mat',datapath);
 dict = load(sprintf('%s/annot/dict.mat',datapath));
 cad = load(sprintf('%s/annot/cad.mat',datapath));
 load(annotfile);
   
-%for ID = 1:length(annot.imgname)
-ID = 1;
+for ID = 1:length(annot.imgname)
+%ID = 1;
 
     % input
     imgname = annot.imgname{ID};
@@ -31,11 +32,10 @@ ID = 1;
     % TODO: WHAT IS THE DIFFERENCE BETWEEN W_HP, W_IM, W_HO??
     
     % pose optimization - weak perspective
-     output_wp = PoseFromKpts_WP(W_hp,dict,'weight',score,'verb',false);
+     output_wp = PoseFromKpts_WP_convergence_plots(W_hp,dict,'weight',score,'verb',false);
     
     % pose optimization - full perspective
-      output_fp = PoseFromKpts_FP(W_ho,dict,'R0',output_wp.R,'weight',score,'verb',false);
-    %TODO: CHECK WHY IT DOESN'T CONVERGE AS WELL AS IN THE WEAK PERSPECTIVE
+    output_fp = PoseFromKpts_FP_convergence_plots(W_ho,dict,'R0',output_wp.R,'weight',score,'verb',false);
     
     % update translation given object metric size
     S_fp = bsxfun(@plus,output_fp.R*output_fp.S,output_fp.T);
@@ -50,4 +50,4 @@ ID = 1;
     
     %TODO CHECK pascal3d_res(datapath, savepath); !!!!
     
-%end
+end
