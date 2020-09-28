@@ -7,3 +7,5 @@ result_poses/*
 *.t7
 result/*
 result_drones_GT/*
+result_drones_GT_2500_1e-3/*
+result_drones_GT_5000_1e-4/*
