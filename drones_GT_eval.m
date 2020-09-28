@@ -11,7 +11,7 @@ datapath = 'pose-hg/pose-hg-demo/data/drones_GT/annot/';
 % path for network output
 predpath = 'pose-hg/pose-hg-demo/exp/drones_GT/';
 % path where the results are stored
-savepath = 'result_drones_GT/';
+savepath = 'result_drones_GT_5000_1e-4/';
 mkdir(savepath);
 annotfile = sprintf('%s/valid.mat',datapath);
 load(annotfile);
@@ -60,11 +60,11 @@ for ID = 1:size(annot.imgname)
 
 
     % pose optimization - weak perspective
-    output_wp = PoseFromKpts_WP(W_hp,dict,'weight',score,'verb',false,'lam',1);
+    output_wp = PoseFromKpts_WP_its(W_hp,dict,'weight',score,'verb',false,'lam',1);
 %    output_wp = PoseFromKpts_WP(W_hp,dict,'weight',score,'verb',false);
 %    (as it is in demoFP)
 
-    output_fp = PoseFromKpts_FP(W_ho,dict,'R0',output_wp.R,'weight',score,'verb',false);
+    output_fp = PoseFromKpts_FP_its(W_ho,dict,'R0',output_wp.R,'weight',score,'verb',false);
     %copied from demoFP
     
     % update translation given object metric size
@@ -94,17 +94,22 @@ for ID = 1:size(annot.imgname)
     if isnan(err_R)
         err_R = 90;
     end
-    err_R
-    display('translation error raw:')
+    %err_R
+    %display('translation error raw:')
     err_T = gt.translation_cd - output_fp.T_metric;
     err_T_norm = norm(err_T);
-    err_T_norm
+    %err_T_norm
     r = gt.translation_cd(3)/output_fp.T_metric(3);
     estimated_planar_rescaled = [output_fp.T_metric(1)*r; output_fp.T_metric(2)*r];
     err_planar_scaled = estimated_planar_rescaled-gt.translation_cd(1:2);
-    display('planar error when on same plane:')
+    %display('planar error when on same plane:')
     err_planar_scaled_norm = norm(err_planar_scaled);
-    err_planar_scaled_norm
+    %err_planar_scaled_norm
+    
+    wp_iter = output_wp.iter;
+    fp_iter = output_fp.iter;
+    wp_time = output_wp.timeAlt - output_wp.timeInit;
+    fp_time = output_fp.time;
     
     
     % visualization
@@ -117,7 +122,7 @@ for ID = 1:size(annot.imgname)
     end
 
     % save output
-    save(savefile,'output_fp','err_R','err_T','err_planar_scaled');
+    save(savefile,'output_fp','err_R','err_T','err_planar_scaled', 'wp_iter', 'fp_iter', 'wp_time', 'fp_time');
         
 end
 

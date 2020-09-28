@@ -7,7 +7,8 @@ function output = PoseFromKpts_FP(W,dict,varargin)
 
 lam = 1;
 D = eye(size(W,2));
-tol = 1e-3;
+%tol = 1e-3
+tol = 1e-4;
 verb = true;
 R = eye(3);
 
@@ -46,7 +47,8 @@ C = 0;
 
 fval = inf;
 t0 = tic;
-for iter = 1:1000
+%for iter = 1:1000
+for iter = 1:10000
     
     % update dpeth Z
     Z = sum(W.*bsxfun(@plus,R*S,T),1)./(sum(W.^2,1)+eps);
@@ -80,6 +82,7 @@ for iter = 1:1000
     end
 
 end
+iter
 
 output.S = S;
 output.R = R;

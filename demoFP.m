@@ -1,4 +1,4 @@
-%% Pose Optimization Demo - Full Perspective case
+%% Pose Optimization Demo - Full Perspective casec
 % Full Perspective case of our Pose Optimization.
 % For convenience, we assume that the heatmaps (keypoint localizations) 
 % are precomputed and provided in the folder demo.
@@ -44,10 +44,8 @@ for ID = 1:length(annot.imgname)
     
     % visualization
     img = imread(sprintf('%s/images/%s',datapath,imgname));
-    vis_fp(img,output_fp,output_wp,heatmap,center,scale,K,cad);
+    vis_fp_paper(img,output_fp,output_wp,heatmap,center,scale,K,cad);
     pause
     close all
-    
-    %TODO CHECK pascal3d_res(datapath, savepath); !!!!
-    
+        
 end
